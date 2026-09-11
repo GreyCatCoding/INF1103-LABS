@@ -4,4 +4,4 @@ WORKDIR /app
 
 COPY auditor.py .
 
-CMD ["python", "auditor.py"]qui
+CMD ["python", "auditor.py"]
