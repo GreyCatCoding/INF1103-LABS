@@ -51,6 +51,6 @@ while True:
 
     inventory = process_delivery(inventory, qty) # current_total is inventory, new_value is qty
     total_tax += calculate_tax(qty)
-    deliveries += 1
+    deliveries += 1 #deliveries counter incremented for each successful delivery
 
 generate_report(inventory, failed_attempts, total_tax)
