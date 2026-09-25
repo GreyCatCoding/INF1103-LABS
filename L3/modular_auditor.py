@@ -21,8 +21,6 @@ def get_valid_input():
     else:
         print("Invalid input. Please enter an integer or type 'quit' to exit.")
         return None
-
-    
         
 def process_delivery(current_total, new_value):
     processed = current_total + new_value
@@ -46,9 +44,10 @@ while True:
         break
 
     if qty is None:
-        failed_attempts += 1
+        # failed_attempts += 1
         continue
-
+    
+    #if all checks are passed, process the delivery and calculate tax
     inventory = process_delivery(inventory, qty) # current_total is inventory, new_value is qty
     total_tax += calculate_tax(qty)
     deliveries += 1 #deliveries counter incremented for each successful delivery

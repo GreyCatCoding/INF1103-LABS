@@ -29,7 +29,7 @@ def load_inventory():
                 
                 print(f"{order_id},{product_name},{qty}")
 
-                next_order_id = order_id + 1
+                next_order_id = order_id + 1 #find the first available ID after previous runs
 
                
     except FileNotFoundError:
@@ -37,7 +37,11 @@ def load_inventory():
 
     return orders, transaction_history, total_inventory, next_order_id
 
-
+def save_inventory(orders):
+    with open("inventory.txt", "w") as file:
+        for order_id,product_name,quantity in orders:
+            file.write(f"{order_id},{product_name},{quantity}\n")
+        
 
 
 def get_valid_input():
@@ -88,7 +92,7 @@ while True:
     transaction_history.append(quantity)
 
     print("\nNew Order Added:")
-    print(f"{next_order_id},{product_name},{quantity}")
+    print(f"{next_order_id},{product_name},{quantity}\n")
 
-    next_order_id += 1
-
+    next_order_id += 1 
+    #main loop:move to the next ID after each newly entered order
