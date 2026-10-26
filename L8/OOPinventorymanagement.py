@@ -67,6 +67,11 @@ class Inventory:
         for product in self.__products:
             product.display_information()  
 
+    def get_all_products(self):
+        """Getter for all products in the inventory"""
+        return self.__products
+
+    
 def add_product():
     print(f"Add new product") 
     product_id = input("Enter product ID: ").strip() # input
