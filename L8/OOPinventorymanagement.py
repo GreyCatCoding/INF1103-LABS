@@ -71,7 +71,25 @@ class Inventory:
         """Getter for all products in the inventory"""
         return self.__products
 
-    
+class MainProgram:
+
+    def init(self, inventory, file_handler):
+        self.__inventory = inventory
+        self.__file_handler = file_handler
+
+    def display_menu(self):
+        print("--------------")
+        print("Inventory Management System")
+        print("--------------")
+        print(f"MENU")
+        print("1. Display All Products")
+        print("2. Add Product")
+        print("3. Update Stock")
+        print("4. Search Product")
+        print("5. Save inventory")
+        print("6. Exit")
+        print("--------------") 
+        
 def add_product():
     print(f"Add new product") 
     product_id = input("Enter product ID: ").strip() # input
