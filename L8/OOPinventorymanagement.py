@@ -11,11 +11,11 @@ class Product:
 
     def update_stock(self, new_stock):
         if new_stock < 0:
-            print("Stock quantity cannot be negative.")
+            #print("Stock quantity cannot be negative.")
             return None
         
         self.__stock = new_stock
-        print(f"Stock updated successfully")
+        #print(f"Stock updated successfully")
 
         return self.__stock
    
@@ -42,8 +42,38 @@ class Product:
     def get_stock(self):
         """getter for product stock"""
         return self.__stock
-        
 
+class Inventory:
+    """Inventory doesn't create products itself. It receives finished Product objects and manages them."""
+    def __init__(self):
+        self.__products = []  # private attribute to store the list of products
+
+    def add_product(self, new_product):
+        """Add a product if its ID is not already in the inventory. Returns True if added, False if duplicate."""
+        for product in self.__products:
+            if product.get_product_id() == new_product.get_product_id():
+                return False
+
+        self.__products.append(new_product)
+        return True
+
+    def search_product(self, product_id):
+        """Search for a product by its ID. Returns the Product object if found, None otherwise."""
+        for product in self.__products:
+            if product.get_product_id() == product_id:
+                return product
+        return None
+
+    def display_all(self):
+        """Display information for all products in the inventory."""
+        for product in self.__products:
+            if not self.__products: #execute only if the inventory is empty
+                return
+            product.display_information()
+            print("-" * 20)
+
+
+    
 
 
 
@@ -175,7 +205,10 @@ def get_valid_input():
         search_product()
     elif option == 5:
         save_inventory(load_inventory())
-        print("Inventory saved successfully.")
+        if inventory.add_product(product):
+            print("Product added successfully!")
+        else:
+            print("Product ID already exists.")
     elif option == 6:
         save_inventory(load_inventory())
         print("Saving inventory before exit")
