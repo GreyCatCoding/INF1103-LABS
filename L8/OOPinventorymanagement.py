@@ -11,21 +11,15 @@ class Product:
 
     def update_stock(self, new_stock):
         if new_stock < 0:
-            #print("Stock quantity cannot be negative.")
             return None
         
         self.__stock = new_stock
-        #print(f"Stock updated successfully")
 
         return self.__stock
    
     def display_information(self):
         """display information about the product"""
-        print(f"ID: {self.__product_id}")
-        print(f"Name: {self.__name}")
-        print(f"Price: ${self.__price:.2f}")
-        print(f"Stock: {self.__stock}")
-
+        print(f"ID: {self.__product_id} | Name: {self.__name} | Price: ${self.__price:.2f} | Stock: {self.__stock}")
    
     def get_product_id(self):
         """getter for product ID"""
@@ -66,24 +60,12 @@ class Inventory:
 
     def display_all(self):
         """Display information for all products in the inventory."""
+        if not self.__products:
+            print("Inventory is empty.")
+            return
+        
         for product in self.__products:
-            if not self.__products: #execute only if the inventory is empty
-                return
-            product.display_information()
-            print("-" * 20)
-
-
-    
-
-
-
-INVENTORY_FILE = Path(__file__).with_name("inventory.json")
-
-DEFAULT_INVENTORY = {
-    "P001": {"ID": "P001", "Name": "Laptop", "Price": 1200.00, "Stock": 15},
-    "P002": {"ID": "P002", "Name": "Mouse", "Price": 25.50, "Stock": 40},
-    "P003": {"ID": "P003", "Name": "Keyboard", "Price": 45.00, "Stock": 25},
-}
+            product.display_information()  
 
 def add_product():
     print(f"Add new product") 
@@ -125,10 +107,6 @@ def add_product():
     )
     save_inventory(inventory)
     print("Product added successfully!")
-
-
-    
-
 
 
 
@@ -177,17 +155,6 @@ def display_all():
 
 def get_valid_input():
     
-    print("--------------")
-    print("Inventory Management System")
-    print("--------------")
-    print(f"MENU")
-    print("1. Display All Products")
-    print("2. Add Product")
-    print("3. Update Stock")
-    print("4. Search Product")
-    print("5. Save Inventory")
-    print("6. Exit")
-    print("--------------") 
 
     try:
         option = int(input("\nEnter option (1-6): ").strip())
@@ -196,13 +163,69 @@ def get_valid_input():
         return None
 
     if option == 1:
-        display_all()
+        inventory.display_all()
+        if not inventory.display_all():
+            print("Inventory is empty.")
+            return None
+        for product in inventory.display_all():
+            product.display_information()
+            
     elif option == 2:
-        add_product()
+        print(f"Add new product") 
+        product_id = input("Enter product ID: ").strip()
+        product_name = input("Enter product name: ").strip()
+        product_price = float(input("Enter product price: ").strip())
+        product_stock = int(input("Enter product stock: ").strip())
+        new_product = Product(product_id, product_name, product_price, product_stock)
+        inventory.add_product(new_product)
+
     elif option == 3:
-        update_stock()
+        print(f"Update product stock")
+        product_id = input("Enter product ID: ").strip()
+
+        product = inventory.search_product(product_id)
+
+        if product is None:
+            print("Product not found.")
+            return None
+        
+        print(f"Name: {product.get_name()}")
+        print(f"Current Stock: {product.get_stock()}")
+
+        try:
+            new_stock = int(input("Enter new stock: ").strip())
+        except ValueError:
+            print("Please enter a whole number.")
+            return None
+
+        result = product.update_stock(new_stock)
+        if result is None:
+            print("Stock updated successfully.")
+        else:
+            print("Product not found.")
+
     elif option == 4:
-        search_product()
+        print(f"Search product")
+        search_id = input("Enter product ID to search: ").strip()
+        product = inventory.search_product(search_id)
+        if product:
+            product.display_information()
+        else:
+            print("Product not found.")
+    elif option == 5:
+        print("Exiting the program.")
+        return "quit"
+    else:
+        print("Invalid option. Please try again.")
+        return None
+    
+while True:
+    option = get_valid_input()
+    if option == "quit":
+        break
+
+    if option is None:
+        continue 
     elif option == 5:
         save_inventory(load_inventory())
         if inventory.add_product(product):
@@ -214,11 +237,6 @@ def get_valid_input():
         print("Saving inventory before exit")
         print("Inventory saved successfully.")
         return "quit"
-    else:
-        print("Invalid option. Please try again.")
-        return None
-
-    return option
 
 
 def load_inventory():
@@ -248,11 +266,4 @@ def save_inventory(products):
     return products
 
 
-while True:
-    option = get_valid_input()
-    if option == "quit":
-        break
-
-    if option is None:
-        continue 
 
