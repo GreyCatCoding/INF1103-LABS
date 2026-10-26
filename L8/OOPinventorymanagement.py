@@ -198,6 +198,15 @@ class FileHandler:
         with open(self.__file_path, "w") as file:
             json.dump(product_list, file, indent=4)
 
+file_handler = FileHandler("inventory.json")
+inventory = file_handler.load_inventory()
+main_program = MainProgram(inventory, file_handler)
+
+while True:
+    main_program.display_menu()
+    option = main_program.get_user_input("Enter option (1-6): ")
+    if main_program.handle_option(option) == "quit":
+        break
     
 def add_product():
     print(f"Add new product") 
