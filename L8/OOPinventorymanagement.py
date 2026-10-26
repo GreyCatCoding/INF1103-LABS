@@ -89,7 +89,11 @@ class MainProgram:
         print("5. Save inventory")
         print("6. Exit")
         print("--------------") 
-        
+
+    def get_user_input(self, prompt):
+        return input(prompt).strip()
+
+    
 def add_product():
     print(f"Add new product") 
     product_id = input("Enter product ID: ").strip() # input
