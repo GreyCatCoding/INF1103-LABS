@@ -18,25 +18,29 @@ class Product:
         print(f"Stock updated successfully")
 
         return self.__stock
-    
-    """display information about the product"""
+   
     def display_information(self):
+        """display information about the product"""
         print(f"ID: {self.__product_id}")
         print(f"Name: {self.__name}")
         print(f"Price: ${self.__price:.2f}")
         print(f"Stock: {self.__stock}")
 
-    """Getter methods for product attributes to be read outside the class"""
+   
     def get_product_id(self):
+        """getter for product ID"""
         return self.__product_id
 
     def get_name(self):
+        """getter for product name"""
         return self.__name
 
     def get_price(self):
+        """getter for product price"""
         return self.__price
 
     def get_stock(self):
+        """getter for product stock"""
         return self.__stock
         
 
