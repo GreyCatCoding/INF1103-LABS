@@ -1,0 +1,18 @@
+# Version control and secrets (pass keys at run time with --env-file)
+.git/
+.gitignore
+.env
+
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Tests, virtual environments, and IDE settings
+venv/
+.venv/
+env/
+.vscode/
+.idea/
