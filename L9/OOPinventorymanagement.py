@@ -1,7 +1,12 @@
 import json
+from abc import ABC, abstractmethod
 
-class Product:
-
+class Product(ABC):
+    @abstractmethod
+    def get_fulfilment_info(self):
+        """Return information necessary for fulfilling the product (e.g., shipping details or download link)"""
+        pass
+    
     def __init__(self, product_id, name, price, stock):
         self.__product_id = product_id # private attribute for product ID
         self.__name = name # private attribute for product name
@@ -49,6 +54,9 @@ class PhysicalProduct(Product):
         """display information about the physical product"""
         super().display_information() #inherits display from Product class
         print(f"Weight: {self.__weight} kg")
+
+    def get_fulfilment_info(self):
+        return "This product requires physical shipping"
  
 class DigitalProduct(Product):
     def __init__(self,product_id, name, price, stock , download_size):
@@ -64,6 +72,8 @@ class DigitalProduct(Product):
         super().display_information() # inherits display from Product class
         print(f"Download Size: {self.__download_size} MB")
 
+    def get_fulfilment_info(self):
+        return "This product is available for is delivered digitally"
 
 
 
