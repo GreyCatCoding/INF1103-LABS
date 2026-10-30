@@ -36,6 +36,23 @@ class Product:
         """getter for product stock"""
         return self.__stock
 
+class PhysicalProduct(Product):
+    def __init__(self, product_id, name, price, stock, weight):
+        super().__init__(product_id, name, price, stock)# allows this subclass to initialize the attributes of the parent Product class
+        self.__weight = weight  # private attribute for product weight
+
+    def get_weight(self):
+        """getter for product weight"""
+        return self.__weight
+
+    def display_information(self):
+        """display information about the physical product"""
+        super().display_information() #inherits display from Product class
+        print(f"Weight: {self.__weight} kg")
+ 
+
+
+
 class Inventory:
     """Inventory doesn't create products itself. It receives finished Product objects and manages them."""
     def __init__(self):
