@@ -9,7 +9,7 @@
         "ID": "P002",
         "Name": "Mouse",
         "Price": 25.5,
-        "Stock": 40
+        "Stock": 20
     },
     {
         "ID": "P003",
@@ -22,5 +22,11 @@
         "Name": "Monitor",
         "Price": 299.99,
         "Stock": 10
+    },
+    {
+        "ID": "P005",
+        "Name": "Speakers",
+        "Price": 300.0,
+        "Stock": 2
     }
 ]

@@ -5,7 +5,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Step C: Copy the rest of your application code
-COPY OOPinventorymanagement.py .
+COPY *.py .
 
 # Set the default command to run the application
 CMD ["python", "OOPinventorymanagement.py" ]
