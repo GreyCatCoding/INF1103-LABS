@@ -87,10 +87,9 @@ class DigitalProduct(Product):
         """display information about the digital product"""
         super().display_information() # inherits display from Product class
         print(f"Download Size: {self.__download_size} MB")
-
+        
     def get_fulfilment_info(self):
-        return "This product is available for is delivered digitally"
-
+        return "This product is delivered digitally"
 
 
 class Inventory:
@@ -163,11 +162,34 @@ class MainProgram:
             except ValueError:
                 print("Invalid price or stock.")
                 return
-            product = Product(product_id, name, price, stock)
+
+            product_type = self.get_user_input("Enter product type (p for physical, d for digital): ").lower()
+
+            if product_type not in ["p", "d"]:
+                print("Invalid product type.")
+                return
+            
+            if product_type == "p":
+                try:
+                    weight = float(self.get_user_input("Enter Weight of product: "))
+                except ValueError:
+                    print("Invalid weight")
+                    return
+                
+                product = PhysicalProduct(product_id, name, price, stock, weight)
+
+            elif product_type == "d":
+                try:
+                    download_size = float(self.get_user_input("Enter downloadable size : "))
+                except ValueError:
+                    print("Invalid downloadable size")
+                    return
+                
+                product = DigitalProduct(product_id, name, price, stock, download_size)
             if self.__inventory.add_product(product):
                 print("Product added successfully.")
             else:
-                print("Product ID already exists.")
+                print("Product ID already exists.")         
 
         elif option == "3":
             print("Update product stock")
@@ -263,7 +285,6 @@ while True:
     option = main_program.get_user_input("Enter option (1-6): ")
     if main_program.handle_option(option) == "quit":
         break
-    
 
 
 
