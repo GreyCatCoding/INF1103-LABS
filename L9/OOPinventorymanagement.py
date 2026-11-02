@@ -90,6 +90,23 @@ class DigitalProduct(Product):
     def get_fulfilment_info(self):
         return "This product is delivered digitally"
 
+class SubscriptionProduct(Product):
+    def __init__(self,product_id, name, price, stock, duration):
+        super().__init__(product_id,name,price,stock)
+        self.__duration = duration
+
+    def get_duration(self):
+        return self.__duration
+
+    def display_information(self):
+        super().display_information()
+        print(f"Duration: {self.__duration} months")
+
+    def get_fulfilment_info(self):
+        return "This product is a subscription"
+
+    
+
 
 class Inventory:
     """Inventory doesn't create products itself. It receives finished Product objects and manages them."""
@@ -161,12 +178,7 @@ class MainProgram:
             except ValueError:
                 print("Invalid price or stock.")
                 return
-
-            product_type = self.get_user_input("Enter product type (p for physical, d for digital): ").lower()
-
-            if product_type not in ["p", "d"]:
-                print("Invalid product type.")
-                return
+            product_type = self.get_user_input("Enter product type (p for physical, d for digital , s for subscription-based): ").lower()
             
             if product_type == "p":
                 try:
@@ -183,8 +195,8 @@ class MainProgram:
                 except ValueError:
                     print("Invalid downloadable size")
                     return
-                
-                product = DigitalProduct(product_id, name, price, stock, download_size)
+
+                product = DigitalProduct(product_id, name, price, stock, download_size)               
             if self.__inventory.add_product(product):
                 print("Product added successfully.")
             else:
@@ -254,16 +266,15 @@ class FileHandler:
         except json.JSONDecodeError:
             print(f"{self.__file_path} is not valid JSON. Starting with an empty inventory.")
             return inventory
-
+        #iterate through the product list and create product objects
         for item in product_list:
             product_type = item.get("Type")
 
-            if item["Type"] == "p":
+            if product_type == "p":
                 product = PhysicalProduct(item["ID"], item["Name"], item["Price"], item["Stock"],item["Weight"])
 
-            elif item["Type"] == "d":
+            elif product_type == "d":
                 product = DigitalProduct(item["ID"], item["Name"], item["Price"], item["Stock"], item["download_size"])
-
             else:
                 print(f"Unknown product type: {product_type}")
                 continue
@@ -290,6 +301,9 @@ class FileHandler:
             elif isinstance(product, DigitalProduct):
                 product_data["Type"] = "d"
                 product_data["download_size"] = product.get_download_size()
+            elif isinstance(product, SubscriptionProduct):
+                product_data["Type"] = "s"
+                product_data["duration"] = product.get_duration()
             else:
                 print(f"Unknown product type for product ID: {product.get_product_id()}")
                 continue
@@ -299,7 +313,6 @@ class FileHandler:
 
         with open(self.__file_path, "w") as file:
             json.dump(product_list, file, indent=4)
-
 
 if __name__ == "__main__":
 
