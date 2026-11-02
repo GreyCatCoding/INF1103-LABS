@@ -195,8 +195,19 @@ class MainProgram:
                 except ValueError:
                     print("Invalid downloadable size")
                     return
+                product = DigitalProduct(product_id, name, price, stock, download_size)
+            elif product_type == "s":
+                try:
+                    duration = int(self.get_user_input("Enter duration of subscription: "))
+                except ValueError:
+                    print("Invalid duration")
+                    return
 
-                product = DigitalProduct(product_id, name, price, stock, download_size)               
+                product = SubscriptionProduct(product_id, name, price, stock, duration)
+            else:
+                print("Invalid product type.")
+                return
+              
             if self.__inventory.add_product(product):
                 print("Product added successfully.")
             else:
