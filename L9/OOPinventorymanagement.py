@@ -87,7 +87,6 @@ class DigitalProduct(Product):
         """display information about the digital product"""
         super().display_information() # inherits display from Product class
         print(f"Download Size: {self.__download_size} MB")
-        
     def get_fulfilment_info(self):
         return "This product is delivered digitally"
 
@@ -257,7 +256,18 @@ class FileHandler:
             return inventory
 
         for item in product_list:
-            product = Product(item["ID"], item["Name"], item["Price"], item["Stock"])
+            product_type = item.get("Type")
+
+            if item["Type"] == "p":
+                product = PhysicalProduct(item["ID"], item["Name"], item["Price"], item["Stock"],item["Weight"])
+
+            elif item["Type"] == "d":
+                product = DigitalProduct(item["ID"], item["Name"], item["Price"], item["Stock"], item["download_size"])
+
+            else:
+                print(f"Unknown product type: {product_type}")
+                continue
+
             inventory.add_product(product)
 
         return inventory
@@ -265,13 +275,27 @@ class FileHandler:
     def save_inventory(self, inventory):
         """Save the Inventory object to the JSON file."""
         product_list = []
+       
         for product in inventory.get_all_products():
-            product_list.append({
+            product_data = {
                 "ID": product.get_product_id(),
                 "Name": product.get_name(),
                 "Price": product.get_price(),
                 "Stock": product.get_stock()
-            })
+            }
+            # isinstance(object, classinfo) checks if an object is an instance of a specified class, data type, or a subclass of it, returning either True or False.
+            if isinstance(product, PhysicalProduct):
+                product_data["Type"] = "p"
+                product_data["Weight"] = product.get_weight()
+            elif isinstance(product, DigitalProduct):
+                product_data["Type"] = "d"
+                product_data["download_size"] = product.get_download_size()
+            else:
+                print(f"Unknown product type for product ID: {product.get_product_id()}")
+                continue
+
+            product_list.append(product_data)
+                
 
         with open(self.__file_path, "w") as file:
             json.dump(product_list, file, indent=4)
