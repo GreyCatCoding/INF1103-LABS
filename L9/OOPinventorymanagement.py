@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 class Product(ABC):
     @abstractmethod
+    
     def get_fulfilment_info(self):
         """Return information necessary for fulfilling the product (e.g., shipping details or download link)"""
         pass
@@ -41,7 +42,19 @@ class Product(ABC):
         """getter for product stock"""
         return self.__stock
 
-class PhysicalProduct(Product):
+class CanBeShipped(ABC):
+    """Interface for products that can be shipped physically."""
+
+    @abstractmethod
+    def calculate_shipping_cost(self):
+        """Calculate the shipping cost for the product"""
+        pass
+
+class PhysicalProduct(Product, CanBeShipped):
+
+    BASE_SHIPPING_COST = 5.0  # base shipping cost for physical products
+    RATE_PER_KG = 2.0  # shipping rate per kilogram
+    
     def __init__(self, product_id, name, price, stock, weight):
         super().__init__(product_id, name, price, stock)# allows this subclass to initialize the attributes of the parent Product class
         self.__weight = weight  # private attribute for product weight
@@ -57,6 +70,9 @@ class PhysicalProduct(Product):
 
     def get_fulfilment_info(self):
         return "This product requires physical shipping"
+
+    def calculate_shipping_cost(self):
+        return self.BASE_SHIPPING_COST + self.RATE_PER_KG * self.__weight
  
 class DigitalProduct(Product):
     def __init__(self,product_id, name, price, stock , download_size):
