@@ -59,14 +59,14 @@ class PhysicalProduct(Product, CanBeShipped):
         super().__init__(product_id, name, price, stock)# allows this subclass to initialize the attributes of the parent Product class
         self.__weight = weight  # private attribute for product weight
 
-    def get_weight(self):
-        """getter for product weight"""
-        return self.__weight
-
     def display_information(self):
         """display information about the physical product"""
         super().display_information() #inherits display from Product class
         print(f"Weight: {self.__weight} kg")
+
+    def get_weight(self):
+        """getter for product weight"""
+        return self.__weight
 
     def get_fulfilment_info(self):
         return "This product requires physical shipping"
@@ -79,14 +79,15 @@ class DigitalProduct(Product):
         super().__init__(product_id, name, price, stock)
         self.__download_size = download_size
 
-    def get_download_size(self):
-        """getter for download size"""
-        return self.__download_size
-
     def display_information(self):
         """display information about the digital product"""
         super().display_information() # inherits display from Product class
         print(f"Download Size: {self.__download_size} MB")
+
+    def get_download_size(self):
+        """getter for download size"""
+        return self.__download_size
+    
     def get_fulfilment_info(self):
         return "This product is delivered digitally"
 
@@ -95,23 +96,21 @@ class SubscriptionProduct(Product):
         super().__init__(product_id,name,price,stock)
         self.__duration = duration
 
-    def get_duration(self):
-        return self.__duration
-
     def display_information(self):
         super().display_information()
         print(f"Duration: {self.__duration} months")
 
+    def get_duration(self):
+        return self.__duration
+
     def get_fulfilment_info(self):
         return "This product is a subscription"
 
-    
-
-
 class Inventory:
     """Inventory doesn't create products itself. It receives finished Product objects and manages them."""
-    def __init__(self):
+    def __init__(self,file_path="inventory.json"):
         self.__products = []  # private attribute to store the list of products
+        self.__file_path = file_path
 
     def add_product(self, new_product):
         """Add a product if its ID is not already in the inventory. Returns True if added, False if duplicate."""
@@ -138,15 +137,72 @@ class Inventory:
         for product in self.__products:
             product.display_information()  
 
+    def load_inventory(self):
+        """Fill this inventory with products read from the JSON file."""
+        try:
+            with open(self.__file_path, "r") as file:
+                product_list = json.load(file)
+        except FileNotFoundError:
+            print(f"{self.__file_path} not found. Starting with an empty inventory.")
+            return
+        except json.JSONDecodeError:
+            print(f"{self.__file_path} is not valid JSON. Starting with an empty inventory.")
+            return
+
+        for item in product_list:
+            product_type = item.get("Type")
+
+            if product_type == "p":
+                product = PhysicalProduct(item["ID"], item["Name"], item["Price"], item["Stock"], item["Weight"])
+            elif product_type == "d":
+                product = DigitalProduct(item["ID"], item["Name"], item["Price"], item["Stock"], item["download_size"])
+            elif product_type == "s":
+                product = SubscriptionProduct(item["ID"], item["Name"], item["Price"], item["Stock"], item["duration"])
+            else:
+                print(f"Unknown product type: {product_type}")
+                continue
+
+            self.add_product(product)
+
+    def save_inventory(self):
+        """Write this inventory's products to the JSON file."""
+        product_list = []
+
+        for product in self.__products:
+            product_data = {
+                "ID": product.get_product_id(),
+                "Name": product.get_name(),
+                "Price": product.get_price(),
+                "Stock": product.get_stock()
+            }
+            if isinstance(product, PhysicalProduct):
+                product_data["Type"] = "p"
+                product_data["Weight"] = product.get_weight()
+            elif isinstance(product, DigitalProduct):
+                product_data["Type"] = "d"
+                product_data["download_size"] = product.get_download_size()
+            elif isinstance(product, SubscriptionProduct):
+                product_data["Type"] = "s"
+                product_data["duration"] = product.get_duration()
+            else:
+                print(f"Unknown product type for product ID: {product.get_product_id()}")
+                continue
+
+            product_list.append(product_data)
+
+        with open(self.__file_path, "w") as file:
+            json.dump(product_list, file, indent=4)
+
+
     def get_all_products(self):
         """Getter for all products in the inventory"""
         return self.__products
-
+    
 class MainProgram:
 
-    def __init__(self, inventory, file_handler):
+    def __init__(self, inventory):
         self.__inventory = inventory
-        self.__file_handler = file_handler
+        #self.__file_handler = file_handler
 
     def display_menu(self):
         print("--------------")
@@ -247,89 +303,92 @@ class MainProgram:
                 print("Product not found.")
 
         elif option == "5":
-            self.__file_handler.save_inventory(self.__inventory)
+            #self.__file_handler.save_inventory(self.__inventory)
+            self.__inventory.save_inventory()
             print("Inventory saved successfully.")
 
         elif option == "6":
-            self.__file_handler.save_inventory(self.__inventory)
+            self.__inventory.save_inventory()
             print("Inventory saved successfully. Exiting the program.")
             return "quit"
         
         else:
             print("Invalid option.")
 
-class FileHandler:
-    """Loads the inventory from a JSON file and turns it into Product objects."""
+# class FileHandler:
+#     """Loads the inventory from a JSON file and turns it into Product objects."""
 
-    def __init__(self, file_path):
-        self.__file_path = file_path  # private attribute for the JSON file's path
+#     def __init__(self, file_path):
+#         self.__file_path = file_path  # private attribute for the JSON file's path
 
-    def load_inventory(self):
-        """Read the JSON file and return an Inventory filled with Product objects."""
-        inventory = Inventory()
+#     def load_inventory(self):
+#         """Read the JSON file and return an Inventory filled with Product objects."""
+#         inventory = Inventory()
 
-        try:
-            with open(self.__file_path, "r") as file:
-                product_list = json.load(file)
-        except FileNotFoundError:
-            print(f"{self.__file_path} not found. Starting with an empty inventory.")
-            return inventory
-        except json.JSONDecodeError:
-            print(f"{self.__file_path} is not valid JSON. Starting with an empty inventory.")
-            return inventory
-        #iterate through the product list and create product objects
-        for item in product_list:
-            product_type = item.get("Type")
+#         try:
+#             with open(self.__file_path, "r") as file:
+#                 product_list = json.load(file)
+#         except FileNotFoundError:
+#             print(f"{self.__file_path} not found. Starting with an empty inventory.")
+#             return inventory
+#         except json.JSONDecodeError:
+#             print(f"{self.__file_path} is not valid JSON. Starting with an empty inventory.")
+#             return inventory
+#         #iterate through the product list and create product objects
+#         for item in product_list:
+#             product_type = item.get("Type")
 
-            if product_type == "p":
-                product = PhysicalProduct(item["ID"], item["Name"], item["Price"], item["Stock"],item["Weight"])
+#             if product_type == "p":
+#                 product = PhysicalProduct(item["ID"], item["Name"], item["Price"], item["Stock"],item["Weight"])
 
-            elif product_type == "d":
-                product = DigitalProduct(item["ID"], item["Name"], item["Price"], item["Stock"], item["download_size"])
-            else:
-                print(f"Unknown product type: {product_type}")
-                continue
+#             elif product_type == "d":
+#                 product = DigitalProduct(item["ID"], item["Name"], item["Price"], item["Stock"], item["download_size"])
+#             elif product_type == "s":
+#                 product = SubscriptionProduct(item["ID"], item["Name"], item["Price"], item["Stock"], item["duration"])
+#             else:
+#                 print(f"Unknown product type: {product_type}")
+#                 continue
 
-            inventory.add_product(product)
+#             inventory.add_product(product)
 
-        return inventory
+#         return inventory
 
-    def save_inventory(self, inventory):
-        """Save the Inventory object to the JSON file."""
-        product_list = []
+#     def save_inventory(self, inventory):
+#         """Save the Inventory object to the JSON file."""
+#         product_list = []
        
-        for product in inventory.get_all_products():
-            product_data = {
-                "ID": product.get_product_id(),
-                "Name": product.get_name(),
-                "Price": product.get_price(),
-                "Stock": product.get_stock()
-            }
-            # isinstance(object, classinfo) checks if an object is an instance of a specified class, data type, or a subclass of it, returning either True or False.
-            if isinstance(product, PhysicalProduct):
-                product_data["Type"] = "p"
-                product_data["Weight"] = product.get_weight()
-            elif isinstance(product, DigitalProduct):
-                product_data["Type"] = "d"
-                product_data["download_size"] = product.get_download_size()
-            elif isinstance(product, SubscriptionProduct):
-                product_data["Type"] = "s"
-                product_data["duration"] = product.get_duration()
-            else:
-                print(f"Unknown product type for product ID: {product.get_product_id()}")
-                continue
+#         for product in inventory.get_all_products():
+#             product_data = {
+#                 "ID": product.get_product_id(),
+#                 "Name": product.get_name(),
+#                 "Price": product.get_price(),
+#                 "Stock": product.get_stock()
+#             }
+#             # isinstance(object, classinfo) checks if an object is an instance of a specified class, data type, or a subclass of it, returning either True or False.
+#             if isinstance(product, PhysicalProduct):
+#                 product_data["Type"] = "p"
+#                 product_data["Weight"] = product.get_weight()
+#             elif isinstance(product, DigitalProduct):
+#                 product_data["Type"] = "d"
+#                 product_data["download_size"] = product.get_download_size()
+#             elif isinstance(product, SubscriptionProduct):
+#                 product_data["Type"] = "s"
+#                 product_data["duration"] = product.get_duration()
+#             else:
+#                 print(f"Unknown product type for product ID: {product.get_product_id()}")
+#                 continue
 
-            product_list.append(product_data)
+#             product_list.append(product_data)
                 
 
-        with open(self.__file_path, "w") as file:
-            json.dump(product_list, file, indent=4)
+#         with open(self.__file_path, "w") as file:
+#             json.dump(product_list, file, indent=4)
 
 if __name__ == "__main__":
 
-    file_handler = FileHandler("inventory.json")
-    inventory = file_handler.load_inventory()
-    main_program = MainProgram(inventory, file_handler)
+    inventory = Inventory("inventory.json")
+    inventory.load_inventory()
+    main_program = MainProgram(inventory)
 
     while True:
         main_program.display_menu()
