@@ -19,8 +19,9 @@ class MainProgram:
         print("2. Add Product")
         print("3. Update Stock")
         print("4. Search Product")
-        print("5. Save inventory")
-        print("6. Exit")
+        print("5. Remove Product")
+        print("6. Save inventory")
+        print("7. Exit")
         print("--------------")
 
     def get_user_input(self, prompt: str):
@@ -118,10 +119,17 @@ class MainProgram:
                 print("Product not found.")
 
         elif option == "5":
+            product_id = self.get_user_input("Enter product ID to remove: ")
+            if self.__inventory.remove_product(product_id):
+                print("Product removed successfully.")
+            else:
+                print("Product not found.")
+
+        elif option == "6":
             self.__inventory.save_inventory()
             print("Inventory saved successfully.")
 
-        elif option == "6":
+        elif option == "7":
             self.__inventory.save_inventory()
             print("Inventory saved successfully. Exiting the program.")
             return "quit"
