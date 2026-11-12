@@ -9,6 +9,6 @@ if __name__ == "__main__":
 
     while True:
         main_program.display_menu()
-        option = main_program.get_user_input("Enter option (1-6): ")
+        option = main_program.get_user_input("Enter option (1-7): ")
         if main_program.handle_option(option) == "quit":
             break
