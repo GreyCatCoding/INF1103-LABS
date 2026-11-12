@@ -8,12 +8,12 @@ from product import Product
 
 
 class Inventory:
-    """Inventory doesn't create products itself. It receives finished Product objects and manages them."""
+    """Aggregation: Inventory doesn't create products itself. It receives finished Product objects and manages them."""
     def __init__(self,file_path:str = "inventory.json") -> None:
         self.__products : list[Product] = []  # private attribute to store the list of products
         self.__file_path = file_path
 
-    def add_product(self, new_product:Product):
+    def add_product(self, new_product:Product) -> bool:
         """Add a product if its ID is not already in the inventory. Returns True if added, False if duplicate."""
         for product in self.__products:
             if product.product_id == new_product.product_id:
@@ -22,12 +22,20 @@ class Inventory:
         self.__products.append(new_product)
         return True
 
-    def search_product(self, product_id:str):
+    def search_product(self, product_id:str) -> Product | None:
         """Search for a product by its ID. Returns the Product object if found, None otherwise."""
         for product in self.__products:
             if product.product_id == product_id:
                 return product
         return None
+    
+    def remove_product(self, product_id:str) -> bool:
+        for product in self.__products:
+            if product.product_id == product_id:
+                #reference to the private attribute __products to remove the product
+                self.__products.remove(product)
+                return True
+        return False
 
     def display_all(self):
         """Display information for all products in the inventory."""
