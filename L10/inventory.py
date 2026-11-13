@@ -12,8 +12,14 @@ class Inventory:
     
     """Aggregation: Inventory doesn't create products itself. It receives finished Product objects and manages them."""
     def __init__(self,file_path:str = "inventory.json") -> None:
-        self.__products : list[Product] = []  # private attribute to store the list of products
+        self.__products: list[Product] = []  # private attribute to store the list of products
         self.__file_path : str = file_path
+
+    @property
+    def products(self) -> list[Product]:
+            """Property to access the list of products in the inventory."""
+            # "Returned a tuple so outside code can read the products but only add_product and remove_product can change them (encapsulation).
+            return tuple(self.__products)
 
     def add_product(self, new_product:Product) -> bool:
         """Add a product if its ID is not already in the inventory. Returns True if added, False if duplicate."""
@@ -38,7 +44,8 @@ class Inventory:
                 self.__products.remove(product)
                 return True
         return False
-
+    
+    
     def display_all(self) -> None:
         """Display information for all products in the inventory."""
         if not self.__products:
