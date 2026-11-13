@@ -1,4 +1,5 @@
 class Supplier:
+    """association: a supplier can be associated with multiple products"""
     def __init__(self, supplier_id: str, name: str, contact_email: str) -> None:
         """initialize a supplier with id, name, and contact email"""
         self.__supplier_id : str = supplier_id

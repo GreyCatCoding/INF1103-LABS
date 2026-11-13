@@ -9,7 +9,7 @@ class PhysicalProduct(Product, CanBeShipped):
 
     def __init__(self, product_id:str, name:str, price:float, stock:int, supplier: Supplier ,weight:float) -> None:
         super().__init__(product_id, name, price, stock, supplier)# allows this subclass to initialize the attributes of the parent Product class
-        self.__weight = weight  # private attribute for product weight
+        self.__weight: float = weight  # private attribute for product weight
 
     def display_information(self) -> None:
         """display information about the physical product"""

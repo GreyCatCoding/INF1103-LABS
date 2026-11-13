@@ -1,10 +1,11 @@
 from product import Product
 
-"""association: an order line is associated with a single product"""
 class OrderLine:
+    
+    """association: an order line is associated with a single product"""
     def __init__(self, product: Product, quantity: int) -> None:
-        self.__product = product
-        self.__quantity = quantity
+        self.__product:Product = product
+        self.__quantity: int = quantity
 
     @property
     def product(self) -> Product:
