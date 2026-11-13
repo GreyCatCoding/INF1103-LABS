@@ -2,15 +2,16 @@ from physical_product import PhysicalProduct
 from digital_product import DigitalProduct
 from subscription_product import SubscriptionProduct
 from supplier import Supplier
+from inventory import Inventory
 
 
 
 class MainProgram:
 
-    def __init__(self, inventory: object):
-        self.__inventory = inventory 
+    def __init__(self, inventory: Inventory) -> None:
+        self.__inventory: Inventory = inventory 
 
-    def display_menu(self):
+    def display_menu(self) -> None:
         print("--------------")
         print("Inventory Management System")
         print("--------------")
@@ -19,15 +20,14 @@ class MainProgram:
         print("2. Add Product")
         print("3. Update Stock")
         print("4. Search Product")
-        print("5. Remove Product")
-        print("6. Save inventory")
-        print("7. Exit")
+        print("5. Save inventory")
+        print("6. Exit")
         print("--------------")
 
-    def get_user_input(self, prompt: str):
+    def get_user_input(self, prompt: str) -> str:
         return input(prompt).strip()
 
-    def handle_option(self, option: str):
+    def handle_option(self, option: str) -> str | None:
         if option == "1":
             print("Current Inventory")
             self.__inventory.display_all() 
@@ -118,18 +118,23 @@ class MainProgram:
             else:
                 print("Product not found.")
 
-        elif option == "5":
-            product_id = self.get_user_input("Enter product ID to remove: ")
-            if self.__inventory.remove_product(product_id):
-                print("Product removed successfully.")
-            else:
-                print("Product not found.")
+            remove_option = self.get_user_input("Do you want to remove this product? (y/n): ").lower()
+            
+            try:
+                if remove_option == "y":
+                    if self.__inventory.remove_product(product_id):
+                        print("Product removed successfully.")
+                else:
+                    print("selection cancelled.")
 
-        elif option == "6":
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
+        elif option == "5":
             self.__inventory.save_inventory()
             print("Inventory saved successfully.")
 
-        elif option == "7":
+        elif option == "6":
             self.__inventory.save_inventory()
             print("Inventory saved successfully. Exiting the program.")
             return "quit"
