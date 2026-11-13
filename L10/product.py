@@ -8,11 +8,13 @@ class Product(ABC):
         pass
 
     def __init__(self, product_id:str, name:str, price:float, stock:int, supplier:Supplier) -> None:
-        self.__product_id = product_id # private attribute for product ID
-        self.__name = name # private attribute for product name
-        self.__price = price # private attribute for product price
-        self.__stock = stock # private attribute for product stock
-        self.__supplier = supplier # private attribute for product supplier
+        self.__product_id: str = product_id # private attribute for product ID
+        self.__name: str = name # private attribute for product name
+        self.__price: float = price # private attribute for product price
+        self.__stock: int = stock # private attribute for product stock
+        
+        """association: each product is associated with a supplier"""
+        self.__supplier: Supplier = supplier # private attribute for product supplier
 
     def update_stock(self, new_stock:int) -> int | None:
         if new_stock < 0:
@@ -24,7 +26,11 @@ class Product(ABC):
 
     def display_information(self) -> None:
         """display information about the product"""
-        print(f"ID: {self.__product_id} | Name: {self.__name} | Price: ${self.__price:.2f} | Stock: {self.__stock}")
+        print(f"ID: {self.__product_id} \n"
+              f"Name: {self.__name}\n"
+              f"Price: ${self.__price:.2f}\n" 
+              f"Stock: {self.__stock}")
+        self.supplier.display_information()
 
     @property
     def product_id(self) -> str:
