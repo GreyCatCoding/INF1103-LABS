@@ -4,6 +4,9 @@ class OrderLine:
     
     """association: an order line is associated with a single product"""
     def __init__(self, product: Product, quantity: int) -> None:
+        if quantity <= 0:
+            raise ValueError("Quantity quantity must be greater than zero.")
+        
         self.__product:Product = product
         self.__quantity: int = quantity
 
