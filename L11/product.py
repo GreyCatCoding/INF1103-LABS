@@ -8,6 +8,13 @@ class Product(ABC):
         pass
 
     def __init__(self, product_id:str, name:str, price:float, stock:int, supplier:Supplier) -> None:
+        """Initialize a product with its ID, name, price, stock, and associated supplier."""
+
+        if price <= 0:
+            raise ValueError("Price must be greater than zero .")
+        if stock < 0:
+            raise ValueError("Stock quantity cannot be negative.")
+
         self.__product_id: str = product_id # private attribute for product ID
         self.__name: str = name # private attribute for product name
         self.__price: float = price # private attribute for product price
@@ -16,11 +23,11 @@ class Product(ABC):
         """association: each product is associated with a supplier"""
         self.__supplier: Supplier = supplier # private attribute for product supplier
 
-    def update_stock(self, new_stock:int) -> int | None:
+    def update_stock(self, new_stock:int) -> int :
         
         if new_stock < 0:
-            return None
-
+            raise ValueError("New stock cannot be negative.")
+        
         self.__stock = new_stock
 
         return self.__stock
