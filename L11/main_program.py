@@ -1,8 +1,6 @@
-from physical_product import PhysicalProduct
-from digital_product import DigitalProduct
-from subscription_product import SubscriptionProduct
-from supplier import Supplier
 from inventory import Inventory
+from provider_factory import ProductFactory
+from supplier import Supplier
 
 
 
@@ -60,32 +58,34 @@ class MainProgram:
 
             if product_type == "p":
                 try:
-                    weight = float(self.get_user_input("Enter Weight of product: "))
+                   extra_attribute = float(self.get_user_input("Enter Weight of product: "))
                 except ValueError:
                     print("Invalid weight")
                     return
                 
-                product = PhysicalProduct(product_id, name, price, stock, supplier, weight)
+                
 
             elif product_type == "d":
                 try:
-                    download_size = float(self.get_user_input("Enter downloadable size : "))
+                    extra_attribute = float(self.get_user_input("Enter downloadable size : "))
                 except ValueError:
                     print("Invalid downloadable size")
                     return
 
-                product = DigitalProduct(product_id, name, price, stock, supplier, download_size)
+               
             elif product_type == "s":
                 try:
-                    duration = int(self.get_user_input("Enter duration of subscription: "))
+                    extra_attribute = int(self.get_user_input("Enter duration of subscription: "))
                 except ValueError:
                     print("Invalid duration")
                     return
 
-                product = SubscriptionProduct(product_id, name, price, stock, supplier, duration)
+              
             else:
                 print("Invalid product type.")
                 return
+
+            product = ProductFactory.create(product_type, product_id, name, price, stock, supplier, extra_attribute)
 
             if self.__inventory.add_product(product):
                 print("Product added successfully.")
