@@ -1,5 +1,5 @@
 from inventory import Inventory
-from provider_factory import ProductFactory
+from product_factory import ProductFactory
 from supplier import Supplier
 
 
@@ -25,34 +25,48 @@ class MainProgram:
     def get_user_input(self, prompt: str) -> str:
         return input(prompt).strip()
 
+    def get_positive_float(self, prompt: str) -> float:
+        while True:
+            try:
+                value = float(self.get_user_input(prompt))
+                if value <= 0:
+                    print("Please enter a value greater than zero.")
+                    continue
+                return value
+            except ValueError:
+                print(f"Invalid input. Please enter a valid number.")
+
+    def get_non_negative_int(self, prompt: str) -> int:
+        while True:
+            try:
+                value = int(self.get_user_input(prompt))
+                if value < 0:
+                    print("Please enter a whole number of 0 or more.")
+                    continue
+                return value
+            except ValueError:
+                print(f"Invalid input. Please enter a valid number.")
+
     def handle_option(self, option: str) -> str | None:
         if option == "1":
             print("Current Inventory")
-            try:
-                self.__inventory.display_all()
-            except Exception as e:
-                print(f"Error displaying inventory: {e}")
+            self.__inventory.display_all()
+
 
         elif option == "2":
+
             product_id = self.get_user_input("Enter product ID: ")
             name = self.get_user_input("Enter product name: ")
-
-            try:
-                price = float(self.get_user_input("Enter product price: "))
-                stock = int(self.get_user_input("Enter product stock: "))
-            except ValueError:
-                print("Invalid price or stock.")
-                return
+           
+            price = self.get_positive_float("Enter product price: ")
+            stock = self.get_non_negative_int("Enter product stock: ")
             
             product_type = self.get_user_input("Enter product type (p for physical, d for digital , s for subscription-based): ").lower()
 
-            try:
-                supplier_id = self.get_user_input("Enter supplier ID: ")
-                supplier_name = self.get_user_input("Enter supplier name: ")
-                supplier_email = self.get_user_input("Enter supplier email: ")
-            except Exception as e:
-                print(f"Error getting supplier information: {e}")
-                return
+            supplier_id = self.get_user_input("Enter supplier ID: ")
+            supplier_name = self.get_user_input("Enter supplier name: ")
+            supplier_email = self.get_user_input("Enter supplier email: ")
+
             
             supplier = Supplier(supplier_id, supplier_name, supplier_email)
 
@@ -111,11 +125,13 @@ class MainProgram:
                 print("Please enter a whole number.")
                 return None
 
-            result = product.update_stock(new_stock)
-            if result is None:
-                print("Stock quantity cannot be negative.")
+            try:
+                product.update_stock(new_stock) # value error is raised if new stock is negative
+            except ValueError as error: # handle the case when new stock is negative
+                print(error)
             else:
                 print("Stock updated successfully.")
+
 
         elif option == "4":
             product_id = self.get_user_input("Enter product ID to search: ")
