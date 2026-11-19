@@ -1,10 +1,11 @@
 import json
-
+from product import Product
+from supplier import Supplier
+from product_factory import ProductFactory
 from physical_product import PhysicalProduct
 from digital_product import DigitalProduct
 from subscription_product import SubscriptionProduct
-from product import Product
-from supplier import Supplier
+
 
 
 
@@ -77,20 +78,25 @@ class Inventory:
                 item.get("SupplierEmail", ""),
             )
             product_type = item.get("Type")
-            
-            #objects must strictly follow constructor
-            if product_type == "p":
-                product = PhysicalProduct(item["ID"], item["Name"], item["Price"], item["Stock"], supplier, item["Weight"])
-            elif product_type == "d":
-                product = DigitalProduct(item["ID"], item["Name"], item["Price"], item["Stock"],supplier, item["download_size"])
-            elif product_type == "s":
-                product = SubscriptionProduct(item["ID"], item["Name"], item["Price"], item["Stock"],supplier, item["duration"])
-            else:
-                print(f"Unknown product type: {product_type}")
+
+
+            try:
+                extra_attribute = 0.0
+                if product_type == "p":
+                    extra_attribute = item["Weight"]
+                elif product_type == "d":
+                    extra_attribute = item["download_size"]
+                elif product_type == "s":
+                    extra_attribute = item["duration"]
+
+                product = ProductFactory.create(product_type, item["ID"], item["Name"], item["Price"], item["Stock"], supplier, extra_attribute)
+                self.add_product(product)
+                
+            except (ValueError, KeyError) as error:
+                print(f"Skipping item {item.get('ID', 'unknown')}: {error}")
                 continue
 
-            self.add_product(product)
-
+            
     def save_inventory(self) -> None:
         """Write this inventory's products to the JSON file."""
         product_list = []
